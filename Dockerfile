@@ -68,16 +68,14 @@ RUN $GEM_HOME/bin/bundle install --jobs 8 --without="mysql"
 RUN echo 'workspaces-experimental true' > .yarnrc
 RUN yarn install --pure-lockfile
 
-# --non-interactive --no-progress
 RUN COMPILE_ASSETS_NPM_INSTALL=0 $GEM_HOME/bin/bundle exec rake canvas:compile_assets_dev
 
 RUN mkdir -p log tmp/pids public/assets public/stylesheets/compiled \
     && touch Gemmfile.lock
 
-RUN sudo service postgresql start && /opt/canvas/dbinit.sh
-
-#RUN chown -R canvasuser: /opt/canvas
-#RUN chown -R canvasuser: /tmp/attachment_fu/
+RUN sudo service postgresql start && \
+    /opt/canvas/dbinit.sh && \
+    sudo service postgresql stop
 
 # postgres
 EXPOSE 5432
