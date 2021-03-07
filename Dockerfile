@@ -10,7 +10,7 @@ ENV GEM_HOME /opt/canvas/.gems
 RUN apt-get update \
     && apt-get -y install curl software-properties-common sudo \
     && add-apt-repository -y ppa:brightbox/ruby-ng \
-    && curl -sL https://deb.nodesource.com/setup_10.x | bash \
+    && curl -sL https://deb.nodesource.com/setup_14.x | bash \
     && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
     && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
     && apt-get update \
@@ -35,7 +35,7 @@ RUN groupadd -r canvasuser -g 433 && \
 
 RUN if [ -e /var/lib/gems/$RUBY_MAJOR.0/gems/bundler-* ]; then BUNDLER_INSTALL="-i /var/lib/gems/$RUBY_MAJOR.0"; fi \
   && gem uninstall --all --ignore-dependencies --force $BUNDLER_INSTALL bundler \
-  && gem install bundler --no-document -v 1.15.2 \
+  && gem install bundler --no-document -v 2.2.11 \
   && chown -R canvasuser: $GEM_HOME
 
 COPY --chown=canvasuser assets/dbinit.sh /opt/canvas/dbinit.sh
@@ -66,7 +66,7 @@ RUN for config in amazon_s3 delayed_jobs domain file_store security external_mig
 
 RUN $GEM_HOME/bin/bundle install --jobs 8 --without="mysql"
 RUN echo 'workspaces-experimental true' > .yarnrc
-RUN yarn install --pure-lockfile
+RUN yarn install --pure-lockfile --network-concurrency 1
 
 RUN COMPILE_ASSETS_NPM_INSTALL=0 $GEM_HOME/bin/bundle exec rake canvas:compile_assets_dev
 
