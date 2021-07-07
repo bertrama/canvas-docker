@@ -16,7 +16,7 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install -y ruby2.6 ruby2.6-dev supervisor redis-server \
         zlib1g-dev libxml2-dev libxslt1-dev libsqlite3-dev postgresql \
-        postgresql-contrib libpq-dev libxmlsec1-dev curl make g++ git \
+        postgresql-contrib libpq-dev libxmlsec1-dev curl make g++ git vim \
         unzip fontforge libicu-dev \
         nodejs yarn unzip fontforge \
     && apt-get clean \
@@ -48,7 +48,7 @@ RUN sed -i "/^#listen_addresses/i listen_addresses='*'" /etc/postgresql/9.5/main
 USER canvasuser
 
 RUN cd /opt/canvas \
-    && git clone https://github.com/instructure/canvas-lms.git \
+    && git clone https://github.com/vagabundeo/canvas-lms.git \
     && cd canvas-lms \
     && git checkout $REVISION
 
@@ -85,3 +85,5 @@ EXPOSE 6379
 EXPOSE 3000
 
 CMD ["sudo", "-E", "/opt/canvas/start.sh"]
+
+RUN cp /opt/canvas/canvas-lms/config/dynamic_settings.yml.example /opt/canvas/canvas-lms/config/dynamic_settings.yml
